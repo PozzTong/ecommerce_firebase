@@ -2,8 +2,9 @@ class ShoeModel {
   final String id;
   final String name;
   final String image;
-  final dynamic price;
-  final dynamic qty;
+  final double price;
+  final int qty;
+  final String cate;
 
   ShoeModel({
     required this.id,
@@ -11,21 +12,34 @@ class ShoeModel {
     required this.image,
     required this.price,
     required this.qty,
+    required this.cate,
   });
 
-  factory ShoeModel.fromMap(String id, Map<String, dynamic> data) {
+  factory ShoeModel.fromJson(Map<String, dynamic> json) {
     return ShoeModel(
-      id: id,
-      name: data['name'] ?? 'Unknown',
-      image: data['image'] ?? '',
-      price: (data['price'] is int)
-          ? (data['price'] as int).toDouble()
-          : (data['price'] is double)
-              ? data['price'] as double
-              : double.tryParse(data['price'].toString()) ?? 0.0,
-      qty: (data['qty'] is int)
-          ? data['qty']
-          : int.tryParse(data['qty'].toString()) ?? 0,
+      id: json['id'] ?? '',
+      name: json['name'] ?? 'Unknown',
+      image: json['image'] ?? '',
+      price: (json['price'] is int)
+          ? (json['price'] as int).toDouble()
+          : (json['price'] is double)
+              ? json['price'] as double
+              : double.tryParse(json['price'].toString()) ?? 0.0,
+      qty: (json['qty'] is int)
+          ? json['qty']
+          : int.tryParse(json['qty'].toString()) ?? 0,
+      cate: json['cate'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'image': image,
+      'price': price,
+      'qty': qty,
+      'cate': cate,
+    };
   }
 }

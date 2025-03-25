@@ -1,3 +1,4 @@
-// class AppKeyConfig {
-//   static const productKey = 'shoe_model';
-// }
+class AppKeyConfig {
+  static const proKey = 'promodel';
+  static const shoeKey = 'shoe_model';
+}
