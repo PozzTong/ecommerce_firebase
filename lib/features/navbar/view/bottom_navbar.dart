@@ -12,7 +12,8 @@ class BottomNavbar extends StatefulWidget {
 
 class _BottomNavbarState extends State<BottomNavbar> {
   int _selectedIndex = 0;
-  final CartController cartController = Get.put(CartController());
+  final ShoeController shoeController = Get.find<ShoeController>();
+
   Color? colors, color;
   final List<Widget> _screens = [
     DashboardScreen(),
@@ -36,44 +37,50 @@ class _BottomNavbarState extends State<BottomNavbar> {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     colors = isDarkMode ? Colors.white : Colors.black;
     color = isDarkMode ? Colors.black : Colors.white;
-    return GetBuilder<CartController>(builder: (controller) {
-      return Scaffold(
-        extendBody: true,
-        body: _screens[_selectedIndex],
-        bottomNavigationBar: Container(
-          height: 60,
-          margin: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: colors,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              btn(0, icon: Icons.home, isShow: false, text: ''),
-              btn(
-                1,
-                icon: Icons.shopify,
-                isShow: cartController.cartItems.isNotEmpty,
-                text: cartController.totalItems.toString(),
+    return GetBuilder<CartController>(
+        init: CartController(),
+        builder: (controller) {
+          return Scaffold(
+            extendBody: true,
+            body: _screens[_selectedIndex],
+            bottomNavigationBar: Container(
+              height: 60,
+              margin: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: colors,
               ),
-              btn(
-                2,
-                icon: Icons.notifications,
-                isShow: false,
-                text: '',
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  btn(0, icon: Icons.home, isShow: false, text: ''),
+                  btn(
+                    1,
+                    icon: Icons.shopify,
+                    isShow: controller.cartItems.isNotEmpty,
+                    text: controller.totalItems.toString(),
+                  ),
+                  btn(
+                    2,
+                    icon: Icons.notifications,
+                    isShow: false,
+                    text: '',
+                  ),
+                  btn(3, icon: Icons.person, isShow: false, text: ''),
+                ],
               ),
-              btn(3, icon: Icons.person, isShow: false, text: ''),
-            ],
-          ),
-        ),
-      );
-    });
+            ),
+          );
+        });
   }
 
-  Widget btn(int index,
-      {required IconData icon, required bool isShow, required String text}) {
+  Widget btn(
+    int index, {
+    required IconData icon,
+    required bool isShow,
+    required String text,
+  }) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
