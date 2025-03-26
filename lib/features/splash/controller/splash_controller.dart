@@ -16,7 +16,6 @@ class SplashController extends GetxController {
     noInternet = false;
     update();
     getData(remember, isOnBoard);
-    // print('remember:${remember}');
   }
 
   void getData(bool isRemember, bool isOnBoard) async {
@@ -30,7 +29,7 @@ class SplashController extends GetxController {
     } else {
       if (isRemember) {
         Future.delayed(const Duration(seconds: 1), () {
-          Get.offAndToNamed(RouteHelper.dashboardScreen);
+          Get.offAndToNamed(RouteHelper.bottomNavbar);
         });
       } else {
         Future.delayed(const Duration(seconds: 1), () {

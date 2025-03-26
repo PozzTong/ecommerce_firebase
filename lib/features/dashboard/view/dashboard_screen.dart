@@ -1,8 +1,10 @@
 import 'dart:async';
-import 'package:badges/badges.dart' as badges;
+import 'package:ecomerce_app/core/route/route.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../common/common.dart';
 import '../../feature.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -24,7 +26,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   };
 
   final ShoeController controller = Get.put(ShoeController());
-  // final CartController cartController = Get.put(CartController());
+  final CartController cartController = Get.put(CartController());
   List<String> banner = [
     'assets/shoe/shoe01.png',
     'assets/shoe/nike.png',
@@ -99,14 +101,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
             title: Text('Explore'),
             centerTitle: true,
             actions: [
-              // Badges(
-              //   icon: Icons.notifications_active_outlined,
-              //   size: 30,
-              //   color: colors!,
-              //   text: cartController.totalItems.toString(),
-              //   isShow: cartController.cartItems.isNotEmpty,
-              //   tap: () {},
-              // )
+              Badges(
+                icon: Icons.notifications_active_outlined,
+                size: 30,
+                color: colors!,
+                text: '',
+                isShow: false,
+                tap: () {
+                  // Get.toNamed(RouteHelper.bottomNavbar);
+                },
+              )
             ],
           ),
           drawer: Drawers(),
@@ -301,41 +305,86 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     padding: const EdgeInsets.all(1.0),
                                     child: Stack(
                                       children: [
-                                        Container(
-                                          width: size.width / 2,
-                                          height: 150,
-                                          decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                              image: NetworkImage(
-                                                product.image,
+                                        GestureDetector(
+                                          onTap: () {
+                                            Get.toNamed(RouteHelper.shoeDetail,
+                                                arguments: {
+                                                  'id': product.id,
+                                                  'image': product.image,
+                                                  'price': product.price,
+                                                  'name': product.name,
+                                                  'cate': product.cate,
+                                                  'shoe': product
+                                                });
+                                          },
+                                          child: Hero(
+                                            tag: product.id,
+                                            child: Container(
+                                              width: size.width * 0.5,
+                                              height: 150,
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: NetworkImage(
+                                                    product.image,
+                                                  ),
+                                                  fit: BoxFit.cover,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                color: Colors.transparent,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withOpacity(0.2),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 6,
+                                                    offset: Offset(0, 3),
+                                                  ),
+                                                ],
                                               ),
-                                              fit: BoxFit.cover,
                                             ),
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            color: Colors.transparent,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.2),
-                                                spreadRadius: 2,
-                                                blurRadius: 6,
-                                                offset: Offset(0, 3),
-                                              ),
-                                            ],
                                           ),
                                         ),
                                         Positioned(
-                                          top: 10,
-                                          right: 10,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              // cartController.addToCart(product);
-                                              // print('object');
+                                          top: 0,
+                                          right: 0,
+                                          child: IconButton(
+                                            onPressed: () {
+                                              cartController
+                                                  .toggleFavorite(product);
                                             },
-                                            child: Icon(
+                                            icon: Icon(
                                               Icons.favorite,
-                                              color: Colors.grey,
+                                              size: 24,
+                                              color: cartController
+                                                      .isFavorite(product.id)
+                                                  ? Colors.redAccent
+                                                  : Colors.grey,
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                          top: 0,
+                                          left: 0,
+                                          child: IconButton(
+                                            onPressed: () {
+                                              cartController.addToCart(product);
+
+                                              Get.snackbar(
+                                                product.name,
+                                                'Add to Cart Successfully',
+                                                duration: Duration(
+                                                    seconds:
+                                                        2), // Show for 2 seconds
+                                                // backgroundColor: Colors.black
+                                                //     .withOpacity(0.8),
+                                                // colorText: Colors.white,
+                                                margin: EdgeInsets.all(10),
+                                              );
+                                            },
+                                            icon: Icon(
+                                              Icons.add,
+                                              color: Colors.blue,
                                             ),
                                           ),
                                         ),
@@ -348,6 +397,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                     child: Text(
                                       product.name,
+                                      maxLines: 2,
                                       style: TextStyle(
                                         // color: Colors.white,
                                         fontWeight: FontWeight.bold,
@@ -355,6 +405,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       ),
                                     ),
                                   ),
+                                  Spacer(),
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -362,6 +413,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 4,
+                                          vertical: 0,
                                         ),
                                         child: Text(
                                           '${product.price}\$',
@@ -377,12 +429,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                             horizontal: 4),
                                         child: Row(
                                           children: [
-                                            Icon(
-                                              Icons.star,
-                                              // color: Colors.white,
-                                            ),
                                             Text(
-                                              '4.8',
+                                              '⭐ 4.8',
                                               style: TextStyle(
                                                 // color: Colors.white,
                                                 fontWeight: FontWeight.bold,
@@ -406,68 +454,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         );
       },
-    );
-  }
-}
-
-class Badges extends StatelessWidget {
-  const Badges({
-    super.key,
-    required this.icon,
-    required this.size,
-    required this.color,
-    required this.text,
-    required this.isShow,
-    required this.tap,
-  });
-
-  final IconData icon;
-  final double size;
-  final Color color;
-  final String text;
-  final bool isShow;
-  final Function tap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => tap(),
-      child: badges.Badge(
-        position: badges.BadgePosition.topEnd(
-          top: -10,
-          end: -12,
-        ),
-        showBadge: isShow,
-        ignorePointer: false,
-        onTap: () {},
-        badgeContent: Text(
-          text,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.white,
-          ),
-        ),
-        badgeAnimation: badges.BadgeAnimation.rotation(
-          animationDuration: Duration(seconds: 1),
-          colorChangeAnimationDuration: Duration(seconds: 1),
-          loopAnimation: false,
-          curve: Curves.fastOutSlowIn,
-          colorChangeAnimationCurve: Curves.easeInCubic,
-        ),
-        badgeStyle: badges.BadgeStyle(
-          shape: badges.BadgeShape.circle,
-          badgeColor: Colors.red,
-          padding: EdgeInsets.all(4),
-          borderRadius: BorderRadius.circular(4),
-          // borderSide: BorderSide(color: Colors.white, width: 2),
-          elevation: 0,
-        ),
-        child: Icon(
-          icon,
-          size: size,
-          color: color,
-        ),
-      ),
     );
   }
 }

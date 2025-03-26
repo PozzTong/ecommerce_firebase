@@ -33,7 +33,7 @@ class LoginController extends GetxController {
 
     if (rememberMe == true && token != null) {
      
-      Get.offAllNamed(RouteHelper.dashboardScreen);
+      Get.offAllNamed(RouteHelper.bottomNavbar);
     }
   }
 
@@ -49,7 +49,7 @@ class LoginController extends GetxController {
 
     await sharedPreferences.setString(
         SharedPreferenceHelper.accessTokenKey, token);
-    Get.offAllNamed(RouteHelper.dashboardScreen);
+    Get.offAllNamed(RouteHelper.bottomNavbar);
     if (remember) {
       changeRememberMe();
     }
@@ -73,7 +73,7 @@ class LoginController extends GetxController {
           print('Firebase ID Token: $token');
         }
 
-        Get.offAndToNamed(RouteHelper.dashboardScreen);
+        Get.offAndToNamed(RouteHelper.bottomNavbar);
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

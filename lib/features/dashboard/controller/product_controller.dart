@@ -46,7 +46,6 @@ class ShoeController extends GetxController {
   Future<void> fetchShoeModels({String? cate}) async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot;
-      // querySnapshot = await FirebaseCollection.getShoeData(cate: cate!);
       if (cate == null) {
         querySnapshot = await FirebaseCollection.getShoeData();
       } else {

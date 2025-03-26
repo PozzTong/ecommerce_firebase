@@ -1,0 +1,6 @@
+{
+  "workbench.tree.enableStickyScroll": true,
+  "workbench.tree.renderIndentGuides": "onHover",
+  "breadcrumbs.enabled": true,
+  "workbench.view.alwaysShowHeaderActions": false
+}

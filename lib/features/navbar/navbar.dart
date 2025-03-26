@@ -1,0 +1,1 @@
+export 'view/bottom_navbar.dart';
