@@ -1,12 +1,10 @@
-import 'package:ecomerce_app/core/core.dart';
-import 'package:ecomerce_app/features/cart/cart.dart';
-import 'package:ecomerce_app/features/dashboard/controller/product_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'core/core.dart';
 import 'core/service/di_service.dart' as services;
-// import 'package:firebase_app_check/firebase_app_check.dart';
+import 'features/feature.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +12,10 @@ Future<void> main() async {
   Get.lazyPut(() => sharedPreferences);
   Get.put(() => ShoeController());
   Get.put(CartController());
+  Get.put(NotificationController());
+  
   await Firebase.initializeApp();
+  
 
   // ignore: unused_local_variable
   Map<String, Map<String, String>> language = await services.init();

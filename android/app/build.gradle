@@ -11,6 +11,7 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -18,8 +19,9 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8
     }
-
+    
     defaultConfig {
+        multiDexEnabled true
         applicationId = "com.example.ecomerce_app"
         minSdk = 23
         targetSdk = 35
@@ -41,4 +43,5 @@ flutter {
 dependencies {
     implementation platform("com.google.firebase:firebase-bom:33.10.0")
     implementation "com.google.firebase:firebase-analytics"
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.2.2"
 }

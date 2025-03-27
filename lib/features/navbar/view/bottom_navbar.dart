@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:get/get.dart';
-
 import '../../feature.dart';
 
 class BottomNavbar extends StatefulWidget {
@@ -18,9 +17,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
   final List<Widget> _screens = [
     DashboardScreen(),
     ShoeCart(),
-    Center(
-      child: Text('data3'),
-    ),
+    AlertTimer(),
     Center(
       child: Text('data4'),
     ),
@@ -30,49 +27,6 @@ class _BottomNavbarState extends State<BottomNavbar> {
     setState(() {
       _selectedIndex = index;
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    colors = isDarkMode ? Colors.white : Colors.black;
-    color = isDarkMode ? Colors.black : Colors.white;
-    return GetBuilder<CartController>(
-        init: CartController(),
-        builder: (controller) {
-          return Scaffold(
-            extendBody: true,
-            body: _screens[_selectedIndex],
-            bottomNavigationBar: Container(
-              height: 60,
-              margin: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: colors,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  btn(0, icon: Icons.home, isShow: false, text: ''),
-                  btn(
-                    1,
-                    icon: Icons.shopify,
-                    isShow: controller.cartItems.isNotEmpty,
-                    text: controller.totalItems.toString(),
-                  ),
-                  btn(
-                    2,
-                    icon: Icons.notifications,
-                    isShow: false,
-                    text: '',
-                  ),
-                  btn(3, icon: Icons.person, isShow: false, text: ''),
-                ],
-              ),
-            ),
-          );
-        });
   }
 
   Widget btn(
@@ -137,4 +91,52 @@ class _BottomNavbarState extends State<BottomNavbar> {
       ],
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    colors = isDarkMode ? Colors.white : Colors.black;
+    color = isDarkMode ? Colors.black : Colors.white;
+    return GetBuilder<CartController>(
+        init: CartController(),
+        builder: (controller) {
+          return Scaffold(
+            extendBody: true,
+            body: _screens[_selectedIndex],
+            bottomNavigationBar: Container(
+              height: 60,
+              margin: EdgeInsets.only(
+                left: 32,
+                right: 32,
+                bottom: 16,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: colors,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  btn(0, icon: Icons.home, isShow: false, text: ''),
+                  btn(
+                    1,
+                    icon: Icons.shopify,
+                    isShow: controller.cartItems.isNotEmpty,
+                    text: controller.totalItems.toString(),
+                  ),
+                  btn(
+                    2,
+                    icon: Icons.notifications,
+                    isShow: false,
+                    text: '',
+                  ),
+                  btn(3, icon: Icons.person, isShow: false, text: ''),
+                ],
+              ),
+            ),
+          );
+        });
+  }
 }
+
