@@ -10,9 +10,9 @@ class _FavoriteShoeState extends State<FavoriteShoe> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       appBar: AppBar(
-         title:Text('FavoriteShoe'),
-        ),
-       );
-     }
+      appBar: AppBar(
+        title: Text('FavoriteShoe'),
+      ),
+    );
+  }
 }

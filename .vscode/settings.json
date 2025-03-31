@@ -2,5 +2,9 @@
   "workbench.tree.enableStickyScroll": true,
   "workbench.tree.renderIndentGuides": "onHover",
   "breadcrumbs.enabled": true,
-  "workbench.view.alwaysShowHeaderActions": false
+  "workbench.view.alwaysShowHeaderActions": false,
+  "dart.closingLabelsTextStyle": "italic",
+  "editor.formatOnType": true,
+  "dart.analyzerPath": null,
+  "editor.defaultFormatter": "Dart-Code.dart-code"
 }

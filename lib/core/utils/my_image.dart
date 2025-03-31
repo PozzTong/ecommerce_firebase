@@ -30,5 +30,4 @@ class MyImage {
   static const String arabic = "assets/images/language_arabic.png";
   static const String german = "assets/images/language_german.png";
   static const String hindi = "assets/images/language_hindi.png";
-
 }

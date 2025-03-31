@@ -48,11 +48,11 @@ class LocalizationController extends GetxController {
     sharedPreferences.setString('country_code', locale.countryCode ?? '');
   }
 
-  int _selectedIndex=0;
-  int get selectedIndex=>_selectedIndex;
+  int _selectedIndex = 0;
+  int get selectedIndex => _selectedIndex;
 
-  void setSelectIndex (int index){
-    _selectedIndex =index;
+  void setSelectIndex(int index) {
+    _selectedIndex = index;
     update();
   }
 }

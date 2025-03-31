@@ -5,7 +5,6 @@ class ShoeModel {
   final double price;
   int qty;
   final String cate;
- 
 
   ShoeModel({
     required this.id,
@@ -14,7 +13,6 @@ class ShoeModel {
     required this.price,
     required this.qty,
     required this.cate,
-    
   });
 
   factory ShoeModel.fromJson(Map<String, dynamic> json) {
@@ -31,7 +29,6 @@ class ShoeModel {
           ? json['qty']
           : int.tryParse(json['qty'].toString()) ?? 0,
       cate: json['cate'] ?? '',
-   
     );
   }
 
@@ -43,11 +40,8 @@ class ShoeModel {
       'price': price,
       'qty': qty,
       'cate': cate,
-     
     };
   }
-
- 
 
   void decreaseStock(int quantity) {
     if (qty >= quantity) {

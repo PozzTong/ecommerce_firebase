@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,7 +10,9 @@ class RouteHelper {
   static const String shoeDetail = '/shoe_detail';
   static const String favShoe = '/favorite_shoe';
   static const String shoeCart = '/shoe_cart';
-  static const String bottomNavbar='/bottom_navbar';
+  static const String bottomNavbar = '/bottom_navbar';
+  static const String addTask = '/add_task';
+  static const String notifiedPage = '/notified_page';
 
   List<GetPage> routes = [
     GetPage(name: loginScreen, page: () => LoginScreen()),
@@ -29,6 +30,8 @@ class RouteHelper {
       page: () => ShoeCart(),
       transition: Transition.leftToRight,
     ),
-    GetPage(name: bottomNavbar, page:()=>BottomNavbar()),
+    GetPage(name: bottomNavbar, page: () => BottomNavbar()),
+    GetPage(name: addTask, page: () => AddTask()),
+    GetPage(name: notifiedPage, page: () => NotifiedPage()),
   ];
 }

@@ -43,7 +43,7 @@ class LocalString {
     ),
   ];
 
-   // Onboarding Screens
+  // Onboarding Screens
   static const String onboardTitle1 = "Onboarding one";
   static const String onboardSubTitle1 = "Onboarding One Description";
   static const String onboardTitle2 = "Onboarding Two";
@@ -53,7 +53,6 @@ class LocalString {
   static const String skip = "Skip";
   static const String next = "Next";
   static const String getStarted = "Get Started";
-
 
   // Login Screen
   static const String password = "Password";
@@ -92,5 +91,4 @@ class LocalString {
   static const String currentPassword = "Current Password";
   static const String currentPasswordHint = "Enter current password";
   static const String saveNewPassword = "Save New Password";
-
 }

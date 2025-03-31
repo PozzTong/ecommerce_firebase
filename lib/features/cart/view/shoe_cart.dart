@@ -162,7 +162,7 @@ class _ShoeCartState extends State<ShoeCart> {
                                       Icons.bookmark,
                                       color: Colors.red,
                                     )
-                                  : Icon(Icons.bookmark_outline)),
+                                  : Icon(Icons.bookmark_outline),),
                         ],
                       ),
                     ),

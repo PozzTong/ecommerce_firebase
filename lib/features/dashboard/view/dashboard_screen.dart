@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:ecomerce_app/core/route/route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../common/common.dart';
@@ -40,7 +41,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       shoeController.selectedCategorys("man");
       shoeController.update();
@@ -63,6 +66,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void dispose() {
     _timer.cancel();
+    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     super.dispose();
   }
 

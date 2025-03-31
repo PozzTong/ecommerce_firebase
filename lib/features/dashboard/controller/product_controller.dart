@@ -8,7 +8,7 @@ class ShoeController extends GetxController {
   var shoe = <ShoeModel>[].obs;
   var pro = <ProModel>[].obs;
   var isLoading = true.obs;
-  List<ShoeModel> filteredShoe = [];//filter 
+  List<ShoeModel> filteredShoe = []; //filter
 
   @override
   void onInit() {
@@ -51,7 +51,7 @@ class ShoeController extends GetxController {
       } else {
         querySnapshot = await FirebaseCollection.getShoeData(cate: cate);
       }
-       shoe.value = querySnapshot.docs
+      shoe.value = querySnapshot.docs
           .map((doc) => ShoeModel.fromJson({
                 'id': doc.id,
                 ...doc.data(),

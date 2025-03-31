@@ -11,7 +11,6 @@ class BottomNavbar extends StatefulWidget {
 
 class _BottomNavbarState extends State<BottomNavbar> {
   int _selectedIndex = 0;
-  final ShoeController shoeController = Get.find<ShoeController>();
 
   Color? colors, color;
   final List<Widget> _screens = [
@@ -139,4 +138,3 @@ class _BottomNavbarState extends State<BottomNavbar> {
         });
   }
 }
-

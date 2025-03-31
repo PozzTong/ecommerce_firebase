@@ -71,7 +71,6 @@ class ShoeModels {
     qty += quantity;
   }
 
-
   Future<void> _loadFavoriteStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     isFavorite.value = prefs.getBool(id) ?? false;

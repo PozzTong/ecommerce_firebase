@@ -32,7 +32,6 @@ class LoginController extends GetxController {
         sharedPreferences.getString(SharedPreferenceHelper.accessTokenKey);
 
     if (rememberMe == true && token != null) {
-     
       Get.offAllNamed(RouteHelper.bottomNavbar);
     }
   }
