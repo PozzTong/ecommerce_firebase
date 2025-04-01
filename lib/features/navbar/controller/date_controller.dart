@@ -1,4 +1,3 @@
-import 'package:ecomerce_app/features/navbar/database/db_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,18 +6,28 @@ import 'package:intl/intl.dart';
 import '/features/feature.dart';
 
 class DateSelectedController extends GetxController {
+  NotiService notiService;
+  SqflitService service;
+  DateSelectedController({
+    required this.service,
+    required this.notiService,
+  });
   @override
   void onInit() {
     super.onInit();
-    getTask();
     initData();
     DbHelper.initialDB();
+    // notiService.initNotification(); //to fetch
   }
+
+  final SqflitService services = Get.find<SqflitService>();
+  final NotiService notiServices = Get.find<NotiService>();
 
   var isLoading = true.obs;
 
   var taskList = <TaskModel>[].obs;
-  TextEditingController titleController = TextEditingController(),
+  TextEditingController 
+      titleController = TextEditingController(),
       noteController = TextEditingController();
 
   DateTime selectedDate = DateTime.now();
@@ -84,7 +93,6 @@ class DateSelectedController extends GetxController {
   validateDate() {
     if (titleController.text.isNotEmpty && noteController.text.isNotEmpty) {
       addTaskToDB();
-
       Get.back();
     } else if (titleController.text.isEmpty || noteController.text.isEmpty) {
       Get.snackbar(
@@ -114,7 +122,7 @@ class DateSelectedController extends GetxController {
       isComplete: 0,
     );
 
-    int value = await addTask(task: newTask);
+    int value = await service.addTask(task: newTask);
     initData();
     if (value != -1) {
       print('Task added with values: $value');
@@ -134,35 +142,11 @@ class DateSelectedController extends GetxController {
     update();
   }
 
-  Future<int> addTask({TaskModel? task}) async {
-    try {
-      return await DbHelper.insert(task);
-    } catch (e) {
-      print("Error inserting task: $e");
-      return -1;
-    }
-  }
-
-  Future<void> getTask() async {
-    List<Map<String, dynamic>> tasks = await DbHelper.query();
-    taskList.assignAll(tasks.map((data) => TaskModel.fromJson(data)).toList());
-    update();
-  }
-
-  void delete(TaskModel task) {
-    DbHelper.delete(task);
-    initData();
-  }
-
-  void markTaskComplete(int id) async {
-    await DbHelper.update(id);
-  }
-
   Future<void> initData({bool sholdLoad = true}) async {
     isLoading.value = sholdLoad;
     update();
     try {
-      await getTask();
+      await service.getTask();
       isLoading.value = false;
       update();
     } catch (e) {
@@ -171,6 +155,4 @@ class DateSelectedController extends GetxController {
     isLoading.value = false;
     update();
   }
-
-  
 }

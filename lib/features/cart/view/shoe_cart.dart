@@ -51,9 +51,11 @@ class _ShoeCartState extends State<ShoeCart> {
                     key: const ValueKey(0),
                     closeOnScroll: true,
                     endActionPane: ActionPane(
-                      dismissible: DismissiblePane(onDismissed: () {
-                        controller.removeonceFromCart(shoe.shoe);
-                      }), // scroll to close
+                      dismissible: DismissiblePane(
+                        onDismissed: () {
+                          controller.removeonceFromCart(shoe.shoe);
+                        },
+                      ),
                       motion: const DrawerMotion(),
                       extentRatio: 0.25,
                       openThreshold: 0.2,
@@ -66,7 +68,23 @@ class _ShoeCartState extends State<ShoeCart> {
                           borderRadius: BorderRadius.circular(10),
                           // spacing: 4,
                           onPressed: (_) {
-                            controller.removeonceFromCart(shoe.shoe);
+                            Get.defaultDialog(
+                              title: "Confirm Deletion",
+                              middleText:
+                                  "Are you sure you want to delete this item?",
+                              textCancel: "Cancel",
+                              textConfirm: "Delete",
+                              confirmTextColor: Colors.white,
+                              buttonColor: Colors.red,
+                              radius: 10,
+                              onConfirm: () {
+                                controller.removeonceFromCart(shoe.shoe);
+                                Get.back();
+                              },
+                              onCancel: () {
+                                Get.back();
+                              },
+                            );
                           },
                           backgroundColor: Colors.redAccent,
                           // foregroundColor: Colors.white,
@@ -154,15 +172,16 @@ class _ShoeCartState extends State<ShoeCart> {
                             ),
                           ),
                           IconButton(
-                              onPressed: () {
-                                controller.toggleFavorite(shoe.shoe);
-                              },
-                              icon: controller.isFavorite(shoe.shoe.id)
-                                  ? Icon(
-                                      Icons.bookmark,
-                                      color: Colors.red,
-                                    )
-                                  : Icon(Icons.bookmark_outline),),
+                            onPressed: () {
+                              controller.toggleFavorite(shoe.shoe);
+                            },
+                            icon: controller.isFavorite(shoe.shoe.id)
+                                ? Icon(
+                                    Icons.bookmark,
+                                    color: Colors.red,
+                                  )
+                                : Icon(Icons.bookmark_outline),
+                          ),
                         ],
                       ),
                     ),

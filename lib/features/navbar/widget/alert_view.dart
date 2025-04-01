@@ -18,214 +18,214 @@ class AlertTimer extends StatefulWidget {
 
 class _AlertTimerState extends State<AlertTimer> {
   final DateSelectedController controller = Get.find<DateSelectedController>();
+  final SqflitService service = Get.find<SqflitService>();
+  final NotiService services = Get.find<NotiService>();
   DateTime selectedDate = DateTime.now();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return GetBuilder<NotificationController>(
-      builder: (controller) {
-        return GetBuilder<DateSelectedController>(
-          builder: (taskController) {
-            return Scaffold(
-              appBar: AppBar(
-                leading: IconButton(
-                  onPressed: () {
-                    // controller.showNotification(title: 'Title', body: 'Body');
-                  },
-                  icon: Icon(
-                    FontAwesomeIcons.moon,
-                  ),
-                ),
-                // title: Text('AlertTimer'),
-                actions: [
-                  CircleAvatar(
-                    backgroundImage: AssetImage(
-                      'assets/images/profile.png',
-                    ),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                ],
+    return GetBuilder<DateSelectedController>(
+      builder: (taskController) {
+        return Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              onPressed: () {
+                // controller.notiService
+                //     .showNotification(title: 'Title', body: 'Body');
+              },
+              icon: Icon(
+                FontAwesomeIcons.moon,
               ),
-              body: RefreshIndicator(
-                onRefresh: () async {
-                  await taskController.initData();
-                },
-                child: Container(
-                  margin: EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  child: Column(
+            ),
+            // title: Text('AlertTimer'),
+            actions: [
+              CircleAvatar(
+                backgroundImage: AssetImage(
+                  'assets/images/profile.png',
+                ),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+            ],
+          ),
+          body: RefreshIndicator(
+            onRefresh: () async {
+              await taskController.initData();
+            },
+            child: Container(
+              margin: EdgeInsets.symmetric(
+                horizontal: 16,
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                DateFormat.yMMMMd().format(DateTime.now()),
-                                style: subHeading,
-                              ),
-                              Text(
-                                'Today',
-                                style: heading,
-                              ),
-                            ],
+                          Text(
+                            DateFormat.yMMMMd().format(DateTime.now()),
+                            style: subHeading,
                           ),
-                          SizedBox(
-                            height: 50,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                backgroundColor: Colors.blue,
-                              ),
-                              onPressed: () {
-                                Get.toNamed(RouteHelper.addTask);
-                              },
-                              child: Text(
-                                '+ Add Task',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
+                          Text(
+                            'Today',
+                            style: heading,
                           ),
                         ],
                       ),
-                      DatePicker(
-                        DateTime.now(),
-                        height: size.width * 0.28,
-                        width: size.width * 0.2,
-                        inactiveDates: [],
-                        initialSelectedDate: DateTime.now(),
-                        selectionColor: Colors.blue,
-                        selectedTextColor: Colors.white,
-                        dateTextStyle: GoogleFonts.lato(
-                          textStyle: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20,
-                            color: Colors.grey,
+                      SizedBox(
+                        height: 50,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            backgroundColor: Colors.blue,
                           ),
-                        ),
-                        dayTextStyle: GoogleFonts.lato(
-                          textStyle: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 10,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        monthTextStyle: GoogleFonts.lato(
-                          textStyle: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 10,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        onDateChange: (date) {
-                          setState(() {
-                            selectedDate = date;
-                          });
-                        },
-                      ),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: taskController.taskList.length,
-                          itemBuilder: (context, index) {
-                            final task = taskController.taskList[index];
-                            // print(task.toJson());
-                            if (task.repeat == 'Daily') {
-                              scheduleTaskNotification(task, controller);
-                              return todoWidget(
-                                index,
-                                taskController,
-                                task,
-                                size,
-                              );
-                            } else if (task.repeat == 'Weekly') {
-                              String cleanedTime = task.data!.trim();
-                              DateTime now = DateTime.now();
-                              String combinedTime =
-                                  '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} $cleanedTime';
-                              DateTime date =
-                                  DateFormat('yyyy-MM-dd').parse(combinedTime);
-                              String formattedDate =
-                                  DateFormat('EEEE/dd/yyyy').format(date);
-                              String week = formattedDate.split("/")[0];
-                              String selecteDate = DateFormat('EEEE/dd/yyyy')
-                                  .format(selectedDate);
-                              String weekly = selecteDate.split('/')[0];
-                              if (week == weekly) {
-                                scheduleTaskNotification(task, controller);
-                                return todoWidget(
-                                  index,
-                                  taskController,
-                                  task,
-                                  size,
-                                );
-                              }
-                            } else if (task.repeat == 'Monthly') {
-                              String cleanedTime = task.data!.trim();
-                              DateTime now = DateTime.now();
-                              String combinedTime =
-                                  '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} $cleanedTime';
-                              DateTime date =
-                                  DateFormat("yyyy-MM-dd").parse(combinedTime);
-                              int day = date.day;
-                              int selecteDay = selectedDate.day;
-                              if (selecteDay == day) {
-                                scheduleTaskNotification(task, controller);
-                                return todoWidget(
-                                  index,
-                                  taskController,
-                                  task,
-                                  size,
-                                );
-                              }
-                            } else if (task.repeat == 'None') {
-                              scheduleTaskNotification(task, controller);
-                              taskController.markTaskComplete(task.id!);
-                            }
-                            if (task.data ==
-                                DateFormat.yMd().format(selectedDate)) {
-                              return todoWidget(
-                                index,
-                                taskController,
-                                task,
-                                size,
-                              );
-                            } else {
-                              return Container();
-                            }
+                          onPressed: () {
+                            Get.toNamed(RouteHelper.addTask);
                           },
+                          child: Text(
+                            '+ Add Task',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
+                  DatePicker(
+                    DateTime.now(),
+                    height: size.width * 0.28,
+                    width: size.width * 0.2,
+                    inactiveDates: [],
+                    initialSelectedDate: DateTime.now(),
+                    selectionColor: Colors.blue,
+                    selectedTextColor: Colors.white,
+                    dateTextStyle: GoogleFonts.lato(
+                      textStyle: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    dayTextStyle: GoogleFonts.lato(
+                      textStyle: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    monthTextStyle: GoogleFonts.lato(
+                      textStyle: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    onDateChange: (date) {
+                      setState(() {
+                        selectedDate = date;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: taskController.service.taskList.length,
+                      itemBuilder: (context, index) {
+                        final task = taskController.service.taskList[index];
+
+                        if (task.repeat == 'Daily') {
+                          scheduleTaskNotification(task, controller);
+                          return todoWidget(
+                            index,
+                            taskController,
+                            task,
+                            size,
+                          );
+                        } else if (task.repeat == 'Weekly') {
+                          String cleanedTime = task.data!.trim();
+                          DateTime now = DateTime.now();
+                          String combinedTime =
+                              '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} $cleanedTime';
+                          DateTime date =
+                              DateFormat('yyyy-MM-dd').parse(combinedTime);
+                          String formattedDate =
+                              DateFormat('EEEE/dd/yyyy').format(date);
+                          String week = formattedDate.split("/")[0];
+                          String selecteDate =
+                              DateFormat('EEEE/dd/yyyy').format(selectedDate);
+                          String weekly = selecteDate.split('/')[0];
+                          if (week == weekly) {
+                            scheduleTaskNotification(task, controller);
+                            return todoWidget(
+                              index,
+                              taskController,
+                              task,
+                              size,
+                            );
+                          }
+                        } else if (task.repeat == 'Monthly') {
+                          String cleanedTime = task.data!.trim();
+                          DateTime now = DateTime.now();
+                          String combinedTime =
+                              '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} $cleanedTime';
+                          DateTime date =
+                              DateFormat("yyyy-MM-dd").parse(combinedTime);
+                          int day = date.day;
+                          int selecteDay = selectedDate.day;
+                          if (selecteDay == day) {
+                            scheduleTaskNotification(task, controller);
+                            return todoWidget(
+                              index,
+                              taskController,
+                              task,
+                              size,
+                            );
+                          }
+                        } else if (task.repeat == 'None') {
+                          scheduleTaskNotification(task, controller);
+                          taskController.service.markTaskComplete(task.id!);
+                        }
+                        if (task.data ==
+                            DateFormat.yMd().format(selectedDate)) {
+                          return todoWidget(
+                            index,
+                            taskController,
+                            task,
+                            size,
+                          );
+                        } else {
+                          return Container();
+                        }
+                      },
+                    ),
+                  ),
+                ],
               ),
-            );
-          },
+            ),
+          ),
         );
       },
     );
   }
 
   void scheduleTaskNotification(
-      TaskModel task, NotificationController controller) {
+      TaskModel task, DateSelectedController controller) {
     if (task.startTime != null && task.startTime!.isNotEmpty) {
       try {
         String cleanedTime = task.startTime!.trim();
         DateTime now = DateTime.now();
         String combinedTime =
             '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} $cleanedTime';
-        DateTime date = DateFormat("yyyy-MM-dd hh:mm a").parse(combinedTime);
+        DateTime date = DateFormat("yyyy-MM-dd HH:mm a").parse(combinedTime);
         int hour = date.hour;
         int minute = date.minute;
-        controller.scheduledNotification(hour, minute, task);
+        debugPrint('$hour:$minute');
+        controller.notiService.scheduledNotification(hour, minute, task);
       } catch (e) {
         print("Error parsing time '${task.startTime}': $e");
       }
@@ -263,9 +263,27 @@ class _AlertTimerState extends State<AlertTimer> {
                     borderRadius: BorderRadius.circular(10),
                     // spacing: 4,
                     onPressed: (_) {
-                      setState(() {
-                        taskController.delete(taskController.taskList[index]);
-                      });
+                      Get.defaultDialog(
+                        title: "Confirm Deletion",
+                        middleText:
+                            "Are you sure you want to delete this even?",
+                        textCancel: "Cancel",
+                        textConfirm: "Delete",
+                        confirmTextColor: Colors.white,
+                        buttonColor: Colors.red,
+                        radius: 10,
+                        onConfirm: () {
+                          setState(() {
+                            taskController.service
+                                .delete(taskController.service.taskList[index]);
+                            taskController.initData();
+                          });
+                          Get.back();
+                        },
+                        onCancel: () {
+                          Get.back();
+                        },
+                      );
                     },
                     backgroundColor: Colors.redAccent,
                     // foregroundColor: Colors.white,
@@ -383,16 +401,25 @@ class _AlertTimerState extends State<AlertTimer> {
       Container(
         padding: EdgeInsets.only(top: 4),
         height: MediaQuery.of(context).size.height * 0.24,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+          color: Colors.amber,
+        ),
         child: Column(
           children: [
             Container(
+              margin: EdgeInsets.only(top: 8),
               height: 6,
               width: 120,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.red,
               ),
-            )
+            ),
           ],
         ),
       ),

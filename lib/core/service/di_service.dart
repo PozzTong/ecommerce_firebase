@@ -9,9 +9,12 @@ Future<Map<String, Map<String, String>>> init() async {
   Get.lazyPut(() => sharedPreferences, fenix: true);
   Get.lazyPut(() => CartController());
   Get.lazyPut(() => ShoeController(), fenix: true);
-  Get.lazyPut(() => NotificationController(), fenix: true);
-  Get.lazyPut(() => DateSelectedController(), fenix: true);
-
+  Get.lazyPut(
+      () => DateSelectedController(
+          service: SqflitService(), notiService: NotiService()),
+      fenix: true);
+  Get.lazyPut(() => NotiService());
+  Get.lazyPut(() => SqflitService());
   Map<String, Map<String, String>> language = {};
   language['en_US'] = {'': ''};
   return language;

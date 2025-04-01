@@ -1,4 +1,4 @@
-import 'package:ecomerce_app/features/navbar/database/db_helper.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,7 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/core.dart';
 import 'core/service/di_service.dart' as services;
 import 'features/feature.dart';
-// import 'package:timezone/data/latest_all.dart' as tz;
+
+import 'package:timezone/data/latest_all.dart' as tz;
+
 // import 'package:timezone/timezone.dart' as tz;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,8 +16,11 @@ Future<void> main() async {
   Get.lazyPut(() => sharedPreferences);
   Get.put(() => ShoeController());
   Get.put(CartController());
-  Get.put(NotificationController());
-  // tz.initializeTimeZones();
+  Get.put(() => NotiService());
+
+  Get.put(() => SqflitService());
+  tz.initializeTimeZones();
+  // await Get.putAsync(() => NotiService().in);
   await DbHelper.initialDB();
   await Firebase.initializeApp();
 

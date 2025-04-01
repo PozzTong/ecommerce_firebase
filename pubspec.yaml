@@ -54,6 +54,9 @@ dependencies:
   sqflite: ^2.4.1
   flutter_timezone: ^4.1.0
   timezone: ^0.10.0
+
+  # local_auth: ^2.1.6
+  local_auth: ^2.3.0
   
 dev_dependencies:
   flutter_test:

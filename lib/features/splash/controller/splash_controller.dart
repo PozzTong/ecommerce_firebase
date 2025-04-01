@@ -29,7 +29,7 @@ class SplashController extends GetxController {
     } else {
       if (isRemember) {
         Future.delayed(const Duration(seconds: 1), () {
-          Get.offAndToNamed(RouteHelper.bottomNavbar);
+          Get.offAndToNamed(RouteHelper.bioView);
         });
       } else {
         Future.delayed(const Duration(seconds: 1), () {

@@ -17,9 +17,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
     DashboardScreen(),
     ShoeCart(),
     AlertTimer(),
-    Center(
-      child: Text('data4'),
-    ),
+    AcView(),
   ];
 
   void _onItemTapped(int index) {

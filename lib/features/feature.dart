@@ -4,3 +4,5 @@ export 'onboarding/onboard.dart';
 export 'splash/splash.dart';
 export 'cart/cart.dart';
 export 'navbar/navbar.dart';
+export 'account/account.dart';
+export 'bio/bio.dart';

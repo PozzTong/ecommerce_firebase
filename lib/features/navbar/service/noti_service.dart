@@ -1,30 +1,24 @@
-import 'package:ecomerce_app/core/core.dart';
-import 'package:ecomerce_app/features/feature.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:get/get.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
 
-import 'package:get/get.dart';
+import '../../../core/core.dart';
+import '../../feature.dart';
 
-class NotificationController extends GetxController {
+class NotiService extends GetxService {
   final FlutterLocalNotificationsPlugin notificationPlugin =
       FlutterLocalNotificationsPlugin();
 
   bool isInitialized = false;
 
-  @override
-  void onInit() {
-    super.onInit();
-    initNotification();
-  }
 
   // INITIALIZE
-  Future<void> initNotification() async {
-    if (isInitialized) return; // Prevent re-initialization
-    _configureLocalTimezone();
+  Future<NotiService> initNotification() async {
+    if (isInitialized) return this;
+    await _configureLocalTimezone();
     // Android init settings
     const initSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -47,6 +41,7 @@ class NotificationController extends GetxController {
       onDidReceiveNotificationResponse: onDidReceiveNotificationResponse,
     );
     isInitialized = true;
+    return this;
   }
 
   void onDidReceiveNotificationResponse(
@@ -124,6 +119,29 @@ class NotificationController extends GetxController {
         payload: "${taskModel.title}|" "${taskModel.note}|");
   }
 
+  Future<void> tesh(
+    int hour,
+    int minute,
+    TaskModel taskModel,
+  ) async {
+    await notificationPlugin.zonedSchedule(
+        taskModel.id!,
+        taskModel.title,
+        taskModel.note,
+        _convertTime(hour, minute),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'channelId',
+            'channelNam',
+            channelDescription: 'channelDescription',
+          ),
+        ),
+        // androidScheduleMode: AndroidScheduleMode.alarmClock,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.time,
+        payload: "${taskModel.title}|" "${taskModel.note}|");
+  }
+
   tz.TZDateTime _convertTime(int hour, int minute) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduleDate = tz.TZDateTime(
@@ -143,6 +161,7 @@ class NotificationController extends GetxController {
   Future<void> _configureLocalTimezone() async {
     tz.initializeTimeZones();
     final String timezone = await FlutterTimezone.getLocalTimezone();
+    debugPrint("Local Timezone: $timezone");
     tz.setLocalLocation(tz.getLocation(timezone));
   }
 }
