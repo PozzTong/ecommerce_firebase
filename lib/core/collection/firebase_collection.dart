@@ -20,4 +20,8 @@ class FirebaseCollection {
   static Future<QuerySnapshot<Map<String, dynamic>>> getProData() async {
     return FirebaseFirestore.instance.collection(AppKeyConfig.proKey).get();
   }
+
+  static Future<QuerySnapshot<Map<String, dynamic>>> getUser() async {
+    return FirebaseFirestore.instance.collection(AppKeyConfig.userKey).get();
+  }
 }

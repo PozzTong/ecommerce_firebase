@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,7 +8,6 @@ import 'features/feature.dart';
 
 import 'package:timezone/data/latest_all.dart' as tz;
 
-// import 'package:timezone/timezone.dart' as tz;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final sharedPreferences = await SharedPreferences.getInstance();
@@ -17,10 +15,17 @@ Future<void> main() async {
   Get.put(() => ShoeController());
   Get.put(CartController());
   Get.put(() => NotiService());
-
   Get.put(() => SqflitService());
+  Get.put(
+    () => DateSelectedController(
+      service: SqflitService(),
+      notiService: NotiService(),
+    ),
+  );
+  Get.put(() => BioController());
+
   tz.initializeTimeZones();
-  // await Get.putAsync(() => NotiService().in);
+  await Get.putAsync(() => NotiService().initNotification());
   await DbHelper.initialDB();
   await Firebase.initializeApp();
 

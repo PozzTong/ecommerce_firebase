@@ -14,6 +14,12 @@ class AddTask extends StatefulWidget {
 
 class _AddTaskState extends State<AddTask> {
   final DateSelectedController controller = Get.find<DateSelectedController>();
+  // @override
+  // void initState() {
+  //   controller.onInit();
+  //   super.initState();
+  // }
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<DateSelectedController>(builder: (controller) {
@@ -42,12 +48,12 @@ class _AddTaskState extends State<AddTask> {
                 MyFormField(
                   title: 'Tilte',
                   hint: 'Enter Title Here.',
-                  controller: controller.titleController,
+                  controller: controller.titleController..text,
                 ),
                 MyFormField(
                   title: 'Note',
                   hint: 'Enter Note Here.',
-                  controller: controller.noteController,
+                  controller: controller.noteController..text,
                 ),
                 MyFormField(
                   title: 'Date',
@@ -101,21 +107,19 @@ class _AddTaskState extends State<AddTask> {
                 ),
                 MyFormField(
                   title: 'Remind',
-                  hint: "${controller.selectedReminder} minutes early",
+                  hint: " ${controller.selectedReminder.value} minutes early",
                   icon: DropdownButton(
                     items: controller.remindList
-                        .map<DropdownMenuItem<String>>((int value) {
-                      return DropdownMenuItem<String>(
-                        value: value.toString(),
+                        .map<DropdownMenuItem<int>>((int value) {
+                      return DropdownMenuItem<int>(
+                        value: value,
                         child: Text(
                           value.toString(),
                         ),
                       );
                     }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        controller.selectedReminder = int.parse(newValue!);
-                      });
+                    onChanged: (newValue) {
+                      controller.updateReminder(newValue!);
                     },
                     icon: Icon(Icons.keyboard_arrow_down),
                     iconSize: 32,
@@ -126,7 +130,7 @@ class _AddTaskState extends State<AddTask> {
                 ),
                 MyFormField(
                   title: 'Repeat',
-                  hint: "${controller.selectedRepeat} ",
+                  hint: "${controller.selectedRepeat.value} ",
                   icon: DropdownButton(
                     items: controller.repeatList
                         .map<DropdownMenuItem<String>>((String value) {
@@ -138,9 +142,7 @@ class _AddTaskState extends State<AddTask> {
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
-                      setState(() {
-                        controller.selectedRepeat = newValue!;
-                      });
+                      controller.updateRepeat(newValue!);
                     },
                     icon: Icon(Icons.keyboard_arrow_down),
                     iconSize: 32,
@@ -172,9 +174,7 @@ class _AddTaskState extends State<AddTask> {
                             children: List<Widget>.generate(3, (int index) {
                               return GestureDetector(
                                 onTap: () {
-                                  setState(() {
-                                    controller.selectedIndex = index;
-                                  });
+                                  controller.updateIndex(index);
                                 },
                                 child: Container(
                                   margin: EdgeInsetsDirectional.all(3),
@@ -209,8 +209,6 @@ class _AddTaskState extends State<AddTask> {
                         child: ElevatedButton(
                           onPressed: () {
                             controller.validateDate();
-                            setState(() {});
-                            // controller.clear();
                           },
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(

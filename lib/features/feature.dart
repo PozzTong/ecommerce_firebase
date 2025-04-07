@@ -6,3 +6,4 @@ export 'cart/cart.dart';
 export 'navbar/navbar.dart';
 export 'account/account.dart';
 export 'bio/bio.dart';
+export 'payment/payment.dart';

@@ -1,2 +1,2 @@
-export 'service/bio_service.dart';
 export 'view/bio_view.dart';
+export 'controller/bio_controller.dart';

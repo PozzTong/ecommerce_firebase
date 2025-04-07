@@ -10,11 +10,15 @@ Future<Map<String, Map<String, String>>> init() async {
   Get.lazyPut(() => CartController());
   Get.lazyPut(() => ShoeController(), fenix: true);
   Get.lazyPut(
-      () => DateSelectedController(
-          service: SqflitService(), notiService: NotiService()),
-      fenix: true);
+    () => DateSelectedController(
+      service: SqflitService(),
+      notiService: NotiService(),
+    ),
+    fenix: true,
+  );
   Get.lazyPut(() => NotiService());
   Get.lazyPut(() => SqflitService());
+  Get.lazyPut(() => BioController());
   Map<String, Map<String, String>> language = {};
   language['en_US'] = {'': ''};
   return language;

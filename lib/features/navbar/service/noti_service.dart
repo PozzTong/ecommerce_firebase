@@ -14,14 +14,14 @@ class NotiService extends GetxService {
 
   bool isInitialized = false;
 
-
   // INITIALIZE
   Future<NotiService> initNotification() async {
     if (isInitialized) return this;
     await _configureLocalTimezone();
-    // Android init settings
-    const initSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    
+    // const initSettingsAndroid =
+    //     AndroidInitializationSettings('@mipmap/ic_launcher');// Android init settings
+    const initSettingsAndroid = AndroidInitializationSettings('splash');//android/app/src/main/res/drawable/
 
     // iOS init settings
     const initSettingsIOS = DarwinInitializationSettings(
@@ -40,6 +40,19 @@ class NotiService extends GetxService {
       initSetting,
       onDidReceiveNotificationResponse: onDidReceiveNotificationResponse,
     );
+    await notificationPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+    await notificationPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+
     isInitialized = true;
     return this;
   }
@@ -82,7 +95,7 @@ class NotiService extends GetxService {
   }
 
   // SHOW NOTIFICATION
-  Future<void> showNotification({
+  void showNotification({
     int id = 0,
     String? title,
     String? body,
@@ -96,7 +109,7 @@ class NotiService extends GetxService {
     );
   }
 
-  Future<void> scheduledNotification(
+  void scheduledNotification(
     int hour,
     int minute,
     TaskModel taskModel,
@@ -113,30 +126,6 @@ class NotiService extends GetxService {
             channelDescription: 'channelDescription',
           ),
         ),
-        // androidScheduleMode: AndroidScheduleMode.alarmClock,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        matchDateTimeComponents: DateTimeComponents.time,
-        payload: "${taskModel.title}|" "${taskModel.note}|");
-  }
-
-  Future<void> tesh(
-    int hour,
-    int minute,
-    TaskModel taskModel,
-  ) async {
-    await notificationPlugin.zonedSchedule(
-        taskModel.id!,
-        taskModel.title,
-        taskModel.note,
-        _convertTime(hour, minute),
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'channelId',
-            'channelNam',
-            channelDescription: 'channelDescription',
-          ),
-        ),
-        // androidScheduleMode: AndroidScheduleMode.alarmClock,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.time,
         payload: "${taskModel.title}|" "${taskModel.note}|");

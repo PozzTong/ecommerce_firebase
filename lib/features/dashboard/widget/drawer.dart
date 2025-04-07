@@ -1,9 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../core/core.dart';
+import '../../feature.dart';
 
 class Drawers extends StatefulWidget {
   const Drawers({
@@ -15,28 +13,7 @@ class Drawers extends StatefulWidget {
 }
 
 class _DrawersState extends State<Drawers> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  // Log Out Method
-  Future<void> logOut() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    try {
-      await _auth.signOut();
-
-      Get.offAllNamed(
-        RouteHelper.loginScreen,
-      );
-      await sharedPreferences.remove(SharedPreferenceHelper.rememberMeKey);
-      await sharedPreferences.remove(SharedPreferenceHelper.accessTokenKey);
-    } catch (e) {
-      // Handle error
-
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error logging out: $e')),
-      );
-    }
-  }
+  final DrawersController controller = Get.put(DrawersController());
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +29,7 @@ class _DrawersState extends State<Drawers> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      logOut();
+                      controller.logOut();
                     },
                     child: Text('Log Out!'),
                   ),

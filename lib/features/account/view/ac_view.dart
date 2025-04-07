@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:local_auth/local_auth.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_windowmanager_plus/flutter_windowmanager_plus.dart';
+
+import '../../feature.dart';
+import '/core/core.dart';
 
 class AcView extends StatefulWidget {
   const AcView({super.key});
@@ -9,255 +13,321 @@ class AcView extends StatefulWidget {
 }
 
 class _AcViewState extends State<AcView> {
-  final LocalAuthentication auth = LocalAuthentication();
-  _SupportState _supportState = _SupportState.unknown;
-  bool? _canCheckBiometrics;
-  List<BiometricType>? _availableBiometrics;
-  String _authorized = 'Not Authorized';
-  bool _isAuthenticating = false;
+  final DrawersController controller = Get.put(DrawersController());
+  final AcController acController = Get.put(AcController());
+  Color? color, colors;
 
   @override
   void initState() {
     super.initState();
-    auth.isDeviceSupported().then(
-          (bool isSupported) => setState(() => _supportState = isSupported
-              ? _SupportState.supported
-              : _SupportState.unsupported),
-        );
-  }
-
-  Future<void> _checkBiometrics() async {
-    late bool canCheckBiometrics;
-    try {
-      canCheckBiometrics = await auth.canCheckBiometrics;
-    } on PlatformException catch (e) {
-      canCheckBiometrics = false;
-      print(e);
-    }
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      _canCheckBiometrics = canCheckBiometrics;
-    });
-  }
-
-  Future<void> _getAvailableBiometrics() async {
-    late List<BiometricType> availableBiometrics;
-    try {
-      availableBiometrics = await auth.getAvailableBiometrics();
-    } on PlatformException catch (e) {
-      availableBiometrics = <BiometricType>[];
-      print(e);
-    }
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      _availableBiometrics = availableBiometrics;
-    });
-  }
-
-  Future<void> _authenticate() async {
-    bool authenticated = false;
-    try {
-      setState(() {
-        _isAuthenticating = true;
-        _authorized = 'Authenticating';
-      });
-      authenticated = await auth.authenticate(
-        localizedReason: 'Let OS determine authentication method',
-        options: const AuthenticationOptions(
-            stickyAuth: false,
-            biometricOnly: false,
-            sensitiveTransaction: false),
+    acController.fetchUser();
+    WidgetsBinding.instance.addPostFrameCallback((timeStam) async {
+      await FlutterWindowManagerPlus.addFlags(
+        FlutterWindowManagerPlus.FLAG_SECURE,
       );
-      setState(() {
-        _isAuthenticating = false;
-      });
-    } on PlatformException catch (e) {
-      print(e);
-      setState(() {
-        _isAuthenticating = false;
-        _authorized = 'Error - ${e.message}';
-      });
-      return;
-    }
-    if (!mounted) {
-      return;
-    }
-
-    setState(
-        () => _authorized = authenticated ? 'Authorized' : 'Not Authorized');
-  }
-
-  Future<void> _authenticateWithBiometrics() async {
-    bool authenticated = false;
-    try {
-      setState(() {
-        _isAuthenticating = true;
-        _authorized = 'Authenticating';
-      });
-      authenticated = await auth.authenticate(
-        localizedReason:
-            'Scan your fingerprint (or face or whatever) to authenticate',
-        options: const AuthenticationOptions(
-          stickyAuth: true,
-          biometricOnly: true,
-        ),
-      );
-      setState(() {
-        _isAuthenticating = false;
-        _authorized = 'Authenticating';
-      });
-    } on PlatformException catch (e) {
-      print(e);
-      setState(() {
-        _isAuthenticating = false;
-        _authorized = 'Error - ${e.message}';
-      });
-      return;
-    }
-    if (!mounted) {
-      return;
-    }
-
-    final String message = authenticated ? 'Authorized' : 'Not Authorized';
-    setState(() {
-      _authorized = message;
     });
   }
 
-  Future<void> _cancelAuthentication() async {
-    await auth.stopAuthentication();
-    setState(
-      () => _isAuthenticating = false,
+  @override
+  void dispose() {
+    FlutterWindowManagerPlus.clearFlags(
+      FlutterWindowManagerPlus.FLAG_SECURE,
     );
-  }
-
-  Future<void> _theAvaiable() async {
-    List<BiometricType> availableBiometrics =
-        await auth.getAvailableBiometrics();
-    print(availableBiometrics);
-    if (!mounted) {
-      return;
-    }
-    setState(() {
-      availableBiometrics.contains(BiometricType.face);
-    });
-  }
-
-  Future<void> _auths() async {
-    try {
-      bool authenticated = await auth.authenticate(
-        localizedReason: 'localizedReason',
-        options: AuthenticationOptions(
-          // stickyAuth: true,
-          biometricOnly: true,
-        ),
-      );
-      print(authenticated);
-    } on PlatformException catch (e) {
-      print(e);
-    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: ListView(
-          padding: const EdgeInsets.only(top: 30),
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                if (_supportState == _SupportState.unknown)
-                  const CircularProgressIndicator()
-                else if (_supportState == _SupportState.supported)
-                  const Text('This device is supported')
-                else
-                  const Text('This device is not supported'),
-                const Divider(height: 100),
-                Text('Can check biometrics: $_canCheckBiometrics\n'),
-                ElevatedButton(
-                  onPressed: _theAvaiable,
-                  child: const Text('Check biometrics'),
-                ),
-                ElevatedButton(
-                  onPressed: _auths,
-                  child: const Text('Check biometrics'),
-                ),
-                ElevatedButton(
-                  onPressed: _checkBiometrics,
-                  child: const Text('Check biometrics'),
-                ),
-                const Divider(height: 100),
-                Text('Available biometrics: $_availableBiometrics\n'),
-                ElevatedButton(
-                  onPressed: _getAvailableBiometrics,
-                  child: const Text('Get available biometrics'),
-                ),
-                const Divider(height: 100),
-                Text('Current State: $_authorized\n'),
-                if (_isAuthenticating)
-                  ElevatedButton(
-                    onPressed: _cancelAuthentication,
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text('Cancel Authentication'),
-                        Icon(Icons.cancel),
-                      ],
+    Size size = MediaQuery.of(context).size;
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    colors = isDarkMode ? Colors.white : Colors.black;
+    color = isDarkMode ? Colors.black : Colors.white;
+    return Scaffold(
+      appBar: AppBar(
+          // backgroundColor: Colors.amber,
+          // actions: [IconButton(onPressed: (){}, icon:Icon(Icons.edit))],
+          ),
+      body: Obx(
+        () {
+          if (acController.user.isEmpty) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          final user = acController.user.first;
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.all(8.0),
+                      height: 80,
+                      width: 80,
+                      child: CircleAvatar(
+                        child: Image.asset('assets/images/profile.png'),
+                      ),
                     ),
-                  )
-                else
-                  Column(
-                    children: <Widget>[
-                      ElevatedButton(
-                        onPressed: _authenticate,
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text('Authenticate'),
-                            Icon(Icons.perm_device_information),
-                          ],
-                        ),
+                    Expanded(
+                        child: ListTile(
+                      title: Text('${user.lastName} ${user.firstName}'),
+                      subtitle: Text(
+                        acController.user.first.position,
                       ),
-                      ElevatedButton(
-                        onPressed: _authenticateWithBiometrics,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text(_isAuthenticating
-                                ? 'Cancel'
-                                : 'Authenticate: biometrics only'),
-                            const Icon(Icons.fingerprint),
-                          ],
-                        ),
+                      titleTextStyle: GoogleFonts.lato(
+                        fontSize: 25,
+                        color: colors,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
+                      subtitleTextStyle: GoogleFonts.lato(
+                        fontSize: 15,
+                        color: colors,
+                      ),
+                    )),
+                  ],
+                ),
+                items(
+                  icon: Icons.phone_outlined,
+                  text: acController.user.first.phone,
+                  ontap: () {},
+                  color: Colors.blue,
+                  colors: colors!,
+                ),
+                items(
+                  icon: Icons.email_outlined,
+                  text: acController.user.first.email,
+                  ontap: () {},
+                  color: Colors.blue,
+                  colors: colors!,
+                ),
+                Container(
+                  width: size.width,
+                  height: 1,
+                  color: colors,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Obx(() {
+                            return acController.isBalanceVisible.value
+                                ? GestureDetector(
+                                    onTap: () {
+                                      acController.hideBalance();
+                                    },
+                                    child: Text(
+                                      '\$1000',
+                                      style: GoogleFonts.lato(
+                                        color: colors,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                  )
+                                : GestureDetector(
+                                    onTap: () {
+                                      acController.authenticate();
+                                    },
+                                    child: Text(
+                                      '*****',
+                                      style: GoogleFonts.lato(
+                                        color: colors,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  );
+                          }),
+                          Text(
+                            'Wallet',
+                            style: GoogleFonts.lato(
+                              fontSize: 15,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 80,
+                      width: 1,
+                      color: colors,
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text(
+                            '12',
+                            style: GoogleFonts.lato(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Order',
+                            style: GoogleFonts.lato(
+                              fontSize: 15,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  width: size.width,
+                  height: 1,
+                  color: colors,
+                ),
+                items(
+                  ontap: () {
+                    Get.toNamed(RouteHelper.favShoe);
+                  },
+                  icon: Icons.favorite_outline,
+                  text: 'Your Favorite',
+                  color: Colors.blue,
+                  colors: colors!,
+                ),
+                items(
+                  icon: Icons.account_balance_wallet_outlined,
+                  text: 'Payment',
+                  ontap: () {
+                    Get.toNamed(RouteHelper.payMent);
+                  },
+                  color: Colors.blue,
+                  colors: colors!,
+                ),
+                items(
+                  icon: Icons.people_alt_outlined,
+                  text: 'Tell Your Friend',
+                  ontap: () {},
+                  color: Colors.blue,
+                  colors: colors!,
+                ),
+                items(
+                  icon: Icons.bookmark_outline,
+                  text: 'Promotions',
+                  ontap: () {},
+                  color: Colors.blue,
+                  colors: colors!,
+                ),
+                items(
+                  icon: Icons.settings_outlined,
+                  text: 'Setting',
+                  ontap: () {},
+                  color: Colors.blue,
+                  colors: colors!,
+                ),
+                Divider(),
+                items(
+                  icon: Icons.logout_outlined,
+                  text: 'Log Out',
+                  ontap: () {
+                    dialog(
+                        title: 'Log Out',
+                        subtitle: 'Are you sure?',
+                        onConfirm: () {
+                          controller.logOut();
+                        });
+                  },
+                  color: Colors.red,
+                  colors: Colors.red,
+                ),
                 SizedBox(
-                  height: 150,
-                )
+                  height: 80,
+                ),
               ],
             ),
-          ],
+          );
+        },
+      ),
+    );
+  }
+
+  Future<dynamic> dialog({
+    required String title,
+    required String subtitle,
+    required Function onConfirm,
+  }) {
+    return Get.defaultDialog(
+      contentPadding: EdgeInsets.all(8),
+      radius: 5,
+      title: title,
+      middleText: subtitle,
+      confirm: GestureDetector(
+        onTap: () {
+          onConfirm();
+          Get.back(); // Close the dialog after confirming
+        },
+        child: Container(
+          alignment: Alignment.center,
+          height: 40,
+          width: 70,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: Colors.blueAccent,
+          ),
+          child: Text(
+            'Confirm',
+            style: GoogleFonts.lato(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ),
+      cancel: GestureDetector(
+        onTap: () {
+          Get.back(); // Close the dialog without confirming
+        },
+        child: Container(
+          alignment: Alignment.center,
+          height: 40,
+          width: 70,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(
+              color: Colors.red,
+            ),
+          ),
+          child: Text(
+            'Cancel',
+            style: GoogleFonts.lato(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
         ),
       ),
     );
   }
-}
 
-enum _SupportState {
-  unknown,
-  supported,
-  unsupported,
+  Widget items({
+    required IconData icon,
+    required String text,
+    required Function ontap,
+    required Color color,
+    required Color colors,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => ontap(),
+            icon: Icon(
+              icon,
+              color: color,
+              size: 26,
+            ),
+          ),
+          Text(
+            text,
+            style: GoogleFonts.lato(color: colors),
+          ),
+        ],
+      ),
+    );
+  }
 }

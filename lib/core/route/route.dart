@@ -14,6 +14,7 @@ class RouteHelper {
   static const String addTask = '/add_task';
   static const String notifiedPage = '/notified_page';
   static const String bioView = '/bio_view';
+  static const String payMent = '/payment_view';
 
   List<GetPage> routes = [
     GetPage(name: loginScreen, page: () => LoginScreen()),
@@ -34,6 +35,7 @@ class RouteHelper {
     GetPage(name: bottomNavbar, page: () => BottomNavbar()),
     GetPage(name: addTask, page: () => AddTask()),
     GetPage(name: notifiedPage, page: () => NotifiedPage()),
-    GetPage(name: bioView, page: ()=>BioView())
+    GetPage(name: bioView, page: () => BioView()),
+    GetPage(name: payMent, page:()=> PaymentView()),
   ];
 }

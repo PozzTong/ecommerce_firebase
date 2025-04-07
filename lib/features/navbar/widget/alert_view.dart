@@ -17,199 +17,202 @@ class AlertTimer extends StatefulWidget {
 }
 
 class _AlertTimerState extends State<AlertTimer> {
-  final DateSelectedController controller = Get.find<DateSelectedController>();
-  final SqflitService service = Get.find<SqflitService>();
-  final NotiService services = Get.find<NotiService>();
+  final DateSelectedController taskController =
+      Get.find<DateSelectedController>();
+
   DateTime selectedDate = DateTime.now();
+  @override
+  void initState() {
+    taskController.onInit();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return GetBuilder<DateSelectedController>(
-      builder: (taskController) {
-        return Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              onPressed: () {
-                // controller.notiService
-                //     .showNotification(title: 'Title', body: 'Body');
-              },
-              icon: Icon(
-                FontAwesomeIcons.moon,
-              ),
-            ),
-            // title: Text('AlertTimer'),
-            actions: [
-              CircleAvatar(
-                backgroundImage: AssetImage(
-                  'assets/images/profile.png',
-                ),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-            ],
+
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            taskController.noti('Title', 'Body');
+          },
+          icon: Icon(
+            FontAwesomeIcons.moon,
           ),
-          body: RefreshIndicator(
-            onRefresh: () async {
-              await taskController.initData();
-            },
-            child: Container(
-              margin: EdgeInsets.symmetric(
-                horizontal: 16,
-              ),
-              child: Column(
+        ),
+        // title: Text('AlertTimer'),
+        actions: [
+          CircleAvatar(
+            backgroundImage: AssetImage(
+              'assets/images/profile.png',
+            ),
+          ),
+          SizedBox(
+            width: 20,
+          ),
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await taskController.initData();
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            DateFormat.yMMMMd().format(DateTime.now()),
-                            style: subHeading,
-                          ),
-                          Text(
-                            'Today',
-                            style: heading,
-                          ),
-                        ],
+                      Text(
+                        DateFormat.yMMMMd().format(DateTime.now()),
+                        style: subHeading,
                       ),
-                      SizedBox(
-                        height: 50,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            backgroundColor: Colors.blue,
-                          ),
-                          onPressed: () {
-                            Get.toNamed(RouteHelper.addTask);
-                          },
-                          child: Text(
-                            '+ Add Task',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+                      Text(
+                        'Today',
+                        style: heading,
                       ),
                     ],
                   ),
-                  DatePicker(
-                    DateTime.now(),
-                    height: size.width * 0.28,
-                    width: size.width * 0.2,
-                    inactiveDates: [],
-                    initialSelectedDate: DateTime.now(),
-                    selectionColor: Colors.blue,
-                    selectedTextColor: Colors.white,
-                    dateTextStyle: GoogleFonts.lato(
-                      textStyle: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 20,
-                        color: Colors.grey,
+                  SizedBox(
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        backgroundColor: Colors.blue,
                       ),
-                    ),
-                    dayTextStyle: GoogleFonts.lato(
-                      textStyle: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 10,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    monthTextStyle: GoogleFonts.lato(
-                      textStyle: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 10,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    onDateChange: (date) {
-                      setState(() {
-                        selectedDate = date;
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: taskController.service.taskList.length,
-                      itemBuilder: (context, index) {
-                        final task = taskController.service.taskList[index];
-
-                        if (task.repeat == 'Daily') {
-                          scheduleTaskNotification(task, controller);
-                          return todoWidget(
-                            index,
-                            taskController,
-                            task,
-                            size,
-                          );
-                        } else if (task.repeat == 'Weekly') {
-                          String cleanedTime = task.data!.trim();
-                          DateTime now = DateTime.now();
-                          String combinedTime =
-                              '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} $cleanedTime';
-                          DateTime date =
-                              DateFormat('yyyy-MM-dd').parse(combinedTime);
-                          String formattedDate =
-                              DateFormat('EEEE/dd/yyyy').format(date);
-                          String week = formattedDate.split("/")[0];
-                          String selecteDate =
-                              DateFormat('EEEE/dd/yyyy').format(selectedDate);
-                          String weekly = selecteDate.split('/')[0];
-                          if (week == weekly) {
-                            scheduleTaskNotification(task, controller);
-                            return todoWidget(
-                              index,
-                              taskController,
-                              task,
-                              size,
-                            );
-                          }
-                        } else if (task.repeat == 'Monthly') {
-                          String cleanedTime = task.data!.trim();
-                          DateTime now = DateTime.now();
-                          String combinedTime =
-                              '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} $cleanedTime';
-                          DateTime date =
-                              DateFormat("yyyy-MM-dd").parse(combinedTime);
-                          int day = date.day;
-                          int selecteDay = selectedDate.day;
-                          if (selecteDay == day) {
-                            scheduleTaskNotification(task, controller);
-                            return todoWidget(
-                              index,
-                              taskController,
-                              task,
-                              size,
-                            );
-                          }
-                        } else if (task.repeat == 'None') {
-                          scheduleTaskNotification(task, controller);
-                          taskController.service.markTaskComplete(task.id!);
-                        }
-                        if (task.data ==
-                            DateFormat.yMd().format(selectedDate)) {
-                          return todoWidget(
-                            index,
-                            taskController,
-                            task,
-                            size,
-                          );
-                        } else {
-                          return Container();
-                        }
+                      onPressed: () {
+                        Get.toNamed(RouteHelper.addTask);
                       },
+                      child: Text(
+                        '+ Add Task',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
+              DatePicker(
+                DateTime.now(),
+                height: size.width * 0.28,
+                width: size.width * 0.2,
+                inactiveDates: [],
+                initialSelectedDate: DateTime.now(),
+                selectionColor: Colors.blue,
+                selectedTextColor: Colors.white,
+                dateTextStyle: GoogleFonts.lato(
+                  textStyle: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 20,
+                    color: Colors.grey,
+                  ),
+                ),
+                dayTextStyle: GoogleFonts.lato(
+                  textStyle: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 10,
+                    color: Colors.grey,
+                  ),
+                ),
+                monthTextStyle: GoogleFonts.lato(
+                  textStyle: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 10,
+                    color: Colors.grey,
+                  ),
+                ),
+                onDateChange: (date) {
+                  setState(() {
+                    selectedDate = date;
+                  });
+                },
+              ),
+              Expanded(
+                child: Obx(() {
+                  return ListView.builder(
+                    itemCount: taskController.service.taskList.length,
+                    itemBuilder: (context, index) {
+                      final task = taskController.service.taskList[index];
+
+                      if (task.repeat == 'Daily') {
+                        scheduleTaskNotification(task, taskController);
+                        return todoWidget(
+                          index,
+                          taskController,
+                          task,
+                          size,
+                        );
+                      } else if (task.repeat == 'Weekly') {
+                        String cleanedTime = task.data!.trim();
+                        DateTime now = DateTime.now();
+                        String combinedTime =
+                            '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} $cleanedTime';
+                        DateTime date =
+                            DateFormat('yyyy-MM-dd').parse(combinedTime);
+                        String formattedDate =
+                            DateFormat('EEEE/dd/yyyy').format(date);
+                        String week = formattedDate.split("/")[0];
+                        String selecteDate =
+                            DateFormat('EEEE/dd/yyyy').format(selectedDate);
+                        String weekly = selecteDate.split('/')[0];
+                        if (week == weekly) {
+                          scheduleTaskNotification(task, taskController);
+                          return todoWidget(
+                            index,
+                            taskController,
+                            task,
+                            size,
+                          );
+                        }
+                      } else if (task.repeat == 'Monthly') {
+                        String cleanedTime = task.data!.trim();
+                        DateTime now = DateTime.now();
+                        String combinedTime =
+                            '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} $cleanedTime';
+                        DateTime date =
+                            DateFormat("yyyy-MM-dd").parse(combinedTime);
+                        int day = date.day;
+                        int selecteDay = selectedDate.day;
+                        if (selecteDay == day) {
+                          scheduleTaskNotification(task, taskController);
+                          return todoWidget(
+                            index,
+                            taskController,
+                            task,
+                            size,
+                          );
+                        }
+                      } else if (task.repeat == 'None') {
+                        scheduleTaskNotification(task, taskController);
+                        // taskController.service.markTaskComplete(task.id!);
+                      }
+                      if (task.data == DateFormat.yMd().format(selectedDate)) {
+                        return todoWidget(
+                          index,
+                          taskController,
+                          task,
+                          size,
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  );
+                }),
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -225,7 +228,8 @@ class _AlertTimerState extends State<AlertTimer> {
         int hour = date.hour;
         int minute = date.minute;
         debugPrint('$hour:$minute');
-        controller.notiService.scheduledNotification(hour, minute, task);
+
+        controller.scheduledNotification(hour, minute, task);
       } catch (e) {
         print("Error parsing time '${task.startTime}': $e");
       }
@@ -273,11 +277,9 @@ class _AlertTimerState extends State<AlertTimer> {
                         buttonColor: Colors.red,
                         radius: 10,
                         onConfirm: () {
-                          setState(() {
-                            taskController.service
-                                .delete(taskController.service.taskList[index]);
-                            taskController.initData();
-                          });
+                          taskController.deleteTask(
+                              taskController.service.taskList[index]);
+                          taskController.initData();
                           Get.back();
                         },
                         onCancel: () {

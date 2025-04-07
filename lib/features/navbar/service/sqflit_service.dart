@@ -28,7 +28,7 @@ class SqflitService extends GetxService {
   void delete(TaskModel task) {
     DbHelper.delete(task);
   }
-  
+
   void markTaskComplete(int id) async {
     await DbHelper.update(id);
   }

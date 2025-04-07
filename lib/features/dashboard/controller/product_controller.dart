@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
+import '../../../core/core.dart';
 import '../../feature.dart';
 
 class ShoeController extends GetxController {
@@ -84,4 +85,5 @@ class ShoeController extends GetxController {
       update();
     }
   }
+  
 }
